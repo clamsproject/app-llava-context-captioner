@@ -29,20 +29,10 @@ class LlavaCaptioner(ClamsApp):
         pass
 
     def get_context(self, mmif: Mmif, timeframe:AnnotationTypes.TimeFrame, max_characters: int = 200) -> str:
-        def frame_to_ms(frame_num, fps=29.97): # todo move this to the tdh function
-            """Converts frame number to milliseconds."""
-            return int(frame_num / fps * 1000)
-    
         start_frame = timeframe.properties["start"]
         end_frame = timeframe.properties["end"]
-
-        start_ms = frame_to_ms(start_frame)
-        end_ms = frame_to_ms(end_frame)
-        if start_ms == end_ms:
-            return ""
-        sliced_text = text_document_helper.slice_text(mmif, start_ms, end_ms)
+        sliced_text = text_document_helper.slice_text(mmif, start_frame, end_frame, unit="frame")
         sliced_text = sliced_text[:max_characters]
-
         return sliced_text
     
     def get_prompt(self, label: str, prompt_map: dict, default_prompt: str) -> str:
